@@ -39,16 +39,16 @@ function createData(idLength, startDate, endDate, numberOfElements = 1) {
         throw new Error();
     }
 
+    const template = 'DD.MM.YYYY HH:MM:SS UTC';
+    const startDateInMillis = +start;
+    const endDateInMillis = +end;
+
     const data = [];
     for (let n = 0; n < numberOfElements; n++) {
-        const idValue = Math.ceil(Math.random() * 10**idLength-1);
-        const idString = idValue.toPrecision(idLength).replace('.','');
-        const startDateInMillis = +start;
-        const endDateInMillis = +end;
+        const idValue = Math.random() * 10**idLength;
+        const idString = idValue.toFixed(0).padStart(idLength, '0');
         const randomOffsetInMillis = Math.ceil(Math.random() * (endDateInMillis - startDateInMillis));
         const createDate = new Date(startDateInMillis + randomOffsetInMillis);
-
-        const template = 'DD.MM.YYYY HH:MM:SS UTC';
         const createDateString = template
             .replace('DD', String(createDate.getDate()).padStart(2,'0'))
             .replace('MM', String((createDate.getMonth() + 1)).padStart(2,'0'))
@@ -56,7 +56,6 @@ function createData(idLength, startDate, endDate, numberOfElements = 1) {
             .replace('HH', String(createDate.getHours()).padStart(2,'0'))
             .replace('MM', String(createDate.getMinutes()).padStart(2,'0'))
             .replace('SS', String(createDate.getSeconds()).padStart(2,'0'))
-
         const dataElement = {
             id: idString,
             time: createDateString,
