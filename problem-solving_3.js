@@ -1,5 +1,6 @@
 // 3. "Client order" Your client SpaceY is creating a new AI system that tries to detect patterns in data using
-// their new algorithm. You need to create a function or functions that can be used to generate data that looks like this:
+// their new algorithm. You need to create a function or functions that can be used to generate data that
+// looks like this:
 // [
 //     { id: "00000005", time: "21.11.2001 14:11:21 UTC" }
 //     { id: "00328105", time: "01.04.2021 03:10:31 UTC" }
@@ -19,12 +20,20 @@
 
 const {performance} = require('perf_hooks');
 
-function createData(idLength, startDate, endDate, numberOfElements = 1) {
+const LOCALE = 'De-de';
+const OPTIONS = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZoneName: 'short'
+};
+const dateTimeFormat = new Intl.DateTimeFormat(LOCALE, OPTIONS);
 
-    if (numberOfElements <= 0) {
-        console.log('numberOfElements must be greater than 0.');
-        throw new Error();
-    }
+
+function createData(idLength, startDate, endDate, numberOfElements = 1) {
 
     if (idLength <= 0) {
         console.log(`Error: idLength must be greater than 0.`);
@@ -39,7 +48,11 @@ function createData(idLength, startDate, endDate, numberOfElements = 1) {
         throw new Error();
     }
 
-    const template = 'DD.MM.YYYY HH:MM:SS UTC';
+    if (numberOfElements <= 0) {
+        console.log('numberOfElements must be greater than 0.');
+        throw new Error();
+    }
+
     const startDateInMillis = +start;
     const endDateInMillis = +end;
 
@@ -49,13 +62,7 @@ function createData(idLength, startDate, endDate, numberOfElements = 1) {
         const idString = idValue.toFixed(0).padStart(idLength, '0');
         const randomOffsetInMillis = Math.ceil(Math.random() * (endDateInMillis - startDateInMillis));
         const createDate = new Date(startDateInMillis + randomOffsetInMillis);
-        const createDateString = template
-            .replace('DD', String(createDate.getDate()).padStart(2,'0'))
-            .replace('MM', String((createDate.getMonth() + 1)).padStart(2,'0'))
-            .replace('YYYY', String(createDate.getFullYear()))
-            .replace('HH', String(createDate.getHours()).padStart(2,'0'))
-            .replace('MM', String(createDate.getMinutes()).padStart(2,'0'))
-            .replace('SS', String(createDate.getSeconds()).padStart(2,'0'))
+        const createDateString = dateTimeFormat.format(createDate);
         const dataElement = {
             id: idString,
             time: createDateString,
@@ -66,13 +73,13 @@ function createData(idLength, startDate, endDate, numberOfElements = 1) {
 }
 
 const numberOfElements = 10 * 10**6;
-const startDateString = "2021-08-01";
-const endDateString = "2021-08-31";
+const startDateString = "2021-01-01";
+const endDateString = "2021-12-31";
 const startDate = new Date(Date.parse(startDateString));
 const endDate = new Date(Date.parse(endDateString));
-console.log(`startDate: ${startDate.toLocaleString('DE-de')}`);
-console.log(`endDate: ${endDate.toLocaleString('DE-de')}`);
-console.log(`Measuring time for creation of ${numberOfElements} data elements. Please wait...`)
+console.log(`startDate: ${dateTimeFormat.format(startDate)}`);
+console.log(`endDate: ${dateTimeFormat.format(endDate)}`);
+console.log(`Measuring time for creation of ${numberOfElements} random data elements. Please wait...`)
 const t0 = performance.now();
 const data = createData(8, startDateString, endDateString, numberOfElements);
 const t1 = performance.now();
