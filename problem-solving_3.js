@@ -20,7 +20,9 @@
 
 const {performance} = require('perf_hooks');
 
-const LOCALE = 'De-de';
+// const LOCALE = 'UTC';
+const LOCALE = 'DE';
+
 const OPTIONS = {
     year: 'numeric',
     month: '2-digit',
@@ -31,7 +33,6 @@ const OPTIONS = {
     timeZoneName: 'short'
 };
 const dateTimeFormat = new Intl.DateTimeFormat(LOCALE, OPTIONS);
-
 
 function createData(idLength, startDate, endDate, numberOfElements = 1) {
 
@@ -59,7 +60,7 @@ function createData(idLength, startDate, endDate, numberOfElements = 1) {
     const data = [];
     for (let n = 0; n < numberOfElements; n++) {
         const idValue = Math.random() * 10**idLength;
-        const idString = idValue.toFixed(0).padStart(idLength, '0');
+        const idString = String(Math.trunc(idValue)).padStart(idLength, '0');
         const randomOffsetInMillis = Math.ceil(Math.random() * (endDateInMillis - startDateInMillis));
         const createDate = new Date(startDateInMillis + randomOffsetInMillis);
         const createDateString = dateTimeFormat.format(createDate);
@@ -72,7 +73,7 @@ function createData(idLength, startDate, endDate, numberOfElements = 1) {
     return data;
 }
 
-const numberOfElements = 10 * 10**6;
+const numberOfElements = 10; // * 10**6;
 const startDateString = "2021-01-01";
 const endDateString = "2021-12-31";
 const startDate = new Date(Date.parse(startDateString));
@@ -81,7 +82,7 @@ console.log(`startDate: ${dateTimeFormat.format(startDate)}`);
 console.log(`endDate: ${dateTimeFormat.format(endDate)}`);
 console.log(`Measuring time for creation of ${numberOfElements} random data elements. Please wait...`)
 const t0 = performance.now();
-const data = createData(8, startDateString, endDateString, numberOfElements);
+const data = createData(3, startDateString, endDateString, numberOfElements);
 const t1 = performance.now();
 const tInSeconds = (t1 - t0) / 1000;
 console.log(`Creation of ${numberOfElements} elements took ${tInSeconds}s.`)
